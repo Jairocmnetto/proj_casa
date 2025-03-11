@@ -407,7 +407,7 @@
       }, 1000);
     });
 
-    // Gera a tabela de comparação conforme o formato solicitado, destacando o menor valor de cada produto
+    // Gera a tabela de comparação conforme o formato solicitado, destacando o menor valor de cada produto e somando os totais
     function generateComparisonTable(budgets) {
       const table = document.createElement("table");
       
@@ -443,6 +443,9 @@
       
       const tbody = document.createElement("tbody");
       
+      // Inicializa os totais para cada fornecedor
+      let supplierSums = new Array(budgets.length).fill(0);
+      
       // Para cada produto (usando os dados da API de produtos) cria uma linha com os dados
       products.forEach(prod => {
         const tr = document.createElement("tr");
@@ -454,25 +457,27 @@
         tr.appendChild(tdQtd);
         
         let supplierCells = [];
-        budgets.forEach(budget => {
+        budgets.forEach((budget, index) => {
           const tdValor = document.createElement("td");
           const item = budget.items.find(i => i.PRODUTO === prod.PRODUTO);
-          let value = null;
+          let value = Infinity;
           if (item && item.VALOR !== "") {
-            tdValor.textContent = item.VALOR;
-            value = parseFloat(item.VALOR);
-            if (isNaN(value)) {
-              value = Infinity;
+            const numericValue = parseFloat(item.VALOR);
+            if (!isNaN(numericValue)) {
+              tdValor.textContent = numericValue.toFixed(2);
+              value = numericValue;
+              supplierSums[index] += numericValue;
+            } else {
+              tdValor.textContent = item.VALOR;
             }
           } else {
             tdValor.textContent = "";
-            value = Infinity;
           }
           supplierCells.push({ cell: tdValor, value: value });
           tr.appendChild(tdValor);
         });
         
-        // Destaca o menor valor entre os fornecedores para este produto
+        // Destaca o(s) menor(es) valor(es) entre os fornecedores para este produto
         const minValue = Math.min(...supplierCells.map(obj => obj.value));
         if (minValue !== Infinity) {
           supplierCells.forEach(obj => {
@@ -484,6 +489,21 @@
         
         tbody.appendChild(tr);
       });
+      
+      // Adiciona a linha de totais
+      const totalRow = document.createElement("tr");
+      const totalLabelTd = document.createElement("td");
+      totalLabelTd.colSpan = 2;
+      totalLabelTd.style.fontWeight = "bold";
+      totalLabelTd.textContent = "TOTAL";
+      totalRow.appendChild(totalLabelTd);
+      supplierSums.forEach(sum => {
+        const totalTd = document.createElement("td");
+        totalTd.style.fontWeight = "bold";
+        totalTd.textContent = sum.toFixed(2);
+        totalRow.appendChild(totalTd);
+      });
+      tbody.appendChild(totalRow);
       
       table.appendChild(tbody);
       
