@@ -4,55 +4,93 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orçamentos de Construção</title>
+  <!-- Fonte moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    /* Estilos Gerais */
     body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      background-color: #f5f5f5;
-    }
-    h1, h2, h3 {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f7f7f7;
       color: #333;
     }
+    h1, h2, h3 {
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 1.8rem;
+    }
+    h2, h3 {
+      font-size: 1.4rem;
+    }
+    /* Formulários e Containers */
     form {
-      margin-bottom: 20px;
       background: #fff;
-      padding: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      margin-bottom: 25px;
     }
     label {
       display: block;
-      margin: 5px 0;
+      margin-bottom: 8px;
+      font-weight: 400;
     }
     input, button {
-      padding: 8px;
-      margin: 5px 0;
       font-size: 1rem;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
     }
+    input:focus, button:focus {
+      border-color: #999;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    button {
+      background-color: #e0e0e0;
+      color: #333;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #d4d4d4;
+    }
+    /* Listas e Tabelas */
     .item-list, .budget-list {
-      margin: 10px 0;
+      margin-top: 15px;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
     }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 40px;
-      background-color: #fff;
-    }
-    table, th, td {
-      border: 1px solid #ccc;
+      background: #fff;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     th, td {
-      padding: 10px;
+      padding: 12px;
+      border: 1px solid #ddd;
       text-align: center;
     }
-    .best-price {
-      background-color: #dff0d8;
+    th {
+      background-color: #fafafa;
     }
-    @media (max-width: 768px) {
-      table {
-        font-size: 0.9rem;
-      }
-    }
+    /* Cartões de Orçamento */
     .budget-selection {
       display: flex;
       flex-wrap: wrap;
@@ -61,15 +99,16 @@
     }
     .budget-card {
       background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
       padding: 10px;
-      flex: 1 1 200px;
+      flex: 1 1 180px;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
-    /* Estilos para o modal */
+    /* Modal */
     .modal {
       display: none; 
       position: fixed; 
@@ -78,28 +117,50 @@
       top: 0;
       width: 100%;
       height: 100%;
-      overflow: auto; 
-      background-color: rgba(0,0,0,0.4);
+      background: rgba(0, 0, 0, 0.4);
+      overflow: auto;
     }
     .modal-content {
-      background-color: #fefefe;
-      margin: 10% auto; 
+      background: #fff;
+      margin: 10% auto;
       padding: 20px;
-      border: 1px solid #888;
-      width: 90%; 
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      width: 90%;
       max-width: 500px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .modal-content h2 {
+      font-size: 1.6rem;
+      margin-top: 0;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
     }
     .close {
-      color: #aaa;
+      color: #666;
       float: right;
       font-size: 28px;
-      font-weight: bold;
-    }
-    .close:hover,
-    .close:focus {
-      color: black;
-      text-decoration: none;
+      font-weight: 500;
       cursor: pointer;
+    }
+    .close:hover {
+      color: #333;
+    }
+    /* Overlay para bloqueio de interações */
+    #overlay {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      padding-top: 200px;
     }
   </style>
 </head>
@@ -108,7 +169,7 @@
   <form id="new-budget-form">
     <label>
       Fornecedor:
-      <input type="text" id="supplierName">
+      <input type="text" id="supplierName" placeholder="Digite o nome do fornecedor">
     </label>
     <!-- Botão para abrir o modal de produtos -->
     <button type="button" id="openProductModal">Selecionar Produtos</button>
@@ -117,10 +178,10 @@
       <h3>Itens Adicionados</h3>
       <ul id="currentItemList"></ul>
     </div>
-    <button type="submit">Salvar Orçamento</button>
+    <button type="submit" id="saveButton">Salvar Orçamento</button>
   </form>
 
-  <!-- Modal de Produtos -->
+  <!-- Modal de Produtos com design aprimorado -->
   <div id="productModal" class="modal">
     <div class="modal-content">
       <span class="close" id="closeModal">&times;</span>
@@ -136,8 +197,12 @@
   <h1>Comparação de Orçamentos</h1>
   <div id="comparisonResult"></div>
 
+  <!-- Overlay para bloquear interações durante o envio -->
+  <div id="overlay">Aguarde, os dados estão sendo salvos...</div>
+
   <script>
     let savedBudgets = [];
+    let displayedBudgets = [];  // Armazena os orçamentos filtrados (sem header "FORNECEDOR")
     let currentItems = [];
     let products = [];
 
@@ -147,6 +212,7 @@
     const savedBudgetsListDiv = document.getElementById("savedBudgetsList");
     const compareButton = document.getElementById("compareButton");
     const comparisonResultDiv = document.getElementById("comparisonResult");
+    const overlay = document.getElementById("overlay");
 
     // Elementos do modal
     const openProductModalButton = document.getElementById("openProductModal");
@@ -236,11 +302,11 @@
 
     // Função para carregar orçamentos já salvos no banco (GET)
     function loadSavedBudgets() {
-      fetch('https://script.google.com/macros/s/AKfycbwZoRfhhQe8kPWlnMyaRGAhPY1nB9tNaGALl_fgGRe9C2-a2P-buphfJohTLerSa8rBEQ/exec')
+      fetch('https://script.google.com/macros/s/AKfycbzHWk-CEI4_Ixv2pIFzIGD4Pz3qOnGhQx1KRQXNu-LZ2L3WfJS24bXep7jUuFzs7t_kGA/exec')
         .then(response => response.json())
         .then(data => {
-          // Supomos que o retorno seja um array de orçamentos no mesmo formato:
-          // [{supplier:"Fornecedor X", items:[{PRODUTO:"...", QUANTIDADE:..., VALOR:...}, ...]}, ...]
+          // O retorno esperado é um array de orçamentos:
+          // [{ supplier: "Fornecedor X", items: [{PRODUTO:"...", QUANTIDADE:..., VALOR:...}, ...] }, ...]
           savedBudgets = data;
           updateSavedBudgetsList();
         })
@@ -250,6 +316,10 @@
     // Ao submeter o orçamento, envia os dados e adiciona ao array de orçamentos salvos
     newBudgetForm.addEventListener("submit", function(e) {
       e.preventDefault();
+      
+      // Bloqueia interações e exibe mensagem de aguarde
+      overlay.style.display = "block";
+      
       const supplier = supplierNameInput.value.trim() || "Sem fornecedor";
       
       const dataToSend = currentItems.map(item => ({
@@ -279,8 +349,14 @@
         };
         savedBudgets.push(budgetData);
         updateSavedBudgetsList();
+        // Reabilita as interações removendo o overlay
+        overlay.style.display = "none";
       })
-      .catch(error => alert('Erro: ' + error));
+      .catch(error => {
+        alert('Erro: ' + error);
+        // Reabilita as interações removendo o overlay
+        overlay.style.display = "none";
+      });
       
       supplierNameInput.value = "";
       currentItems = [];
@@ -292,13 +368,16 @@
       });
     });
 
-    // Exibe os orçamentos salvos com checkbox para seleção
+    // Exibe os orçamentos salvos com checkbox para seleção, filtrando a opção "FORNECEDOR"
     function updateSavedBudgetsList() {
       savedBudgetsListDiv.innerHTML = "";
       const container = document.createElement("div");
       container.className = "budget-selection";
       
-      savedBudgets.forEach((budget, index) => {
+      // Filtra para não exibir o header "FORNECEDOR"
+      displayedBudgets = savedBudgets.filter(budget => budget.supplier.toUpperCase() !== "FORNECEDOR");
+      
+      displayedBudgets.forEach((budget, index) => {
         const card = document.createElement("div");
         card.className = "budget-card";
         card.innerHTML = `
@@ -319,7 +398,7 @@
       // Aguarda 1 segundo para garantir que os dados foram carregados
       setTimeout(() => {
         const checkboxes = document.querySelectorAll('#savedBudgetsList input[type="checkbox"]:checked');
-        const selectedBudgets = Array.from(checkboxes).map(cb => savedBudgets[cb.value]);
+        const selectedBudgets = Array.from(checkboxes).map(cb => displayedBudgets[cb.value]);
         if (selectedBudgets.length === 0) {
           alert("Selecione pelo menos um orçamento!");
           return;
@@ -328,7 +407,7 @@
       }, 1000);
     });
 
-    // Gera a tabela de comparação conforme o formato solicitado
+    // Gera a tabela de comparação conforme o formato solicitado, destacando o menor valor de cada produto
     function generateComparisonTable(budgets) {
       const table = document.createElement("table");
       
@@ -364,7 +443,7 @@
       
       const tbody = document.createElement("tbody");
       
-      // Para cada produto (usando os dados da API) cria uma linha com os dados
+      // Para cada produto (usando os dados da API de produtos) cria uma linha com os dados
       products.forEach(prod => {
         const tr = document.createElement("tr");
         const tdProduto = document.createElement("td");
@@ -374,12 +453,34 @@
         tdQtd.textContent = prod.QUANTIDADE;
         tr.appendChild(tdQtd);
         
+        let supplierCells = [];
         budgets.forEach(budget => {
           const tdValor = document.createElement("td");
           const item = budget.items.find(i => i.PRODUTO === prod.PRODUTO);
-          tdValor.textContent = item ? item.VALOR : "";
+          let value = null;
+          if (item && item.VALOR !== "") {
+            tdValor.textContent = item.VALOR;
+            value = parseFloat(item.VALOR);
+            if (isNaN(value)) {
+              value = Infinity;
+            }
+          } else {
+            tdValor.textContent = "";
+            value = Infinity;
+          }
+          supplierCells.push({ cell: tdValor, value: value });
           tr.appendChild(tdValor);
         });
+        
+        // Destaca o menor valor entre os fornecedores para este produto
+        const minValue = Math.min(...supplierCells.map(obj => obj.value));
+        if (minValue !== Infinity) {
+          supplierCells.forEach(obj => {
+            if (obj.value === minValue) {
+              obj.cell.style.backgroundColor = "#d4f4d4"; // verde claro
+            }
+          });
+        }
         
         tbody.appendChild(tr);
       });
