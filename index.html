@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orçamentos de Construção</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    h1, h2, h3 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+    .item-list, .budget-list {
+      margin: 10px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 40px;
+      background-color: #fff;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+    }
+    .best-price {
+      background-color: #dff0d8;
+    }
+    @media (max-width: 768px) {
+      table {
+        font-size: 0.9rem;
+      }
+    }
+    .budget-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .budget-card {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 10px;
+      flex: 1 1 200px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    /* Estilos para o modal */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto; 
+      background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+      background-color: #fefefe;
+      margin: 10% auto; 
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%; 
+      max-width: 500px;
+    }
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Novo Orçamento</h1>
+  <form id="new-budget-form">
+    <label>
+      Fornecedor:
+      <input type="text" id="supplierName">
+    </label>
+    <!-- Botão para abrir o modal de produtos -->
+    <button type="button" id="openProductModal">Selecionar Produtos</button>
+    
+    <div class="item-list">
+      <h3>Itens Adicionados</h3>
+      <ul id="currentItemList"></ul>
+    </div>
+    <button type="submit">Salvar Orçamento</button>
+  </form>
+
+  <!-- Modal de Produtos -->
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <span class="close" id="closeModal">&times;</span>
+      <h2>Selecione os Produtos</h2>
+      <div id="productList"></div>
+    </div>
+  </div>
+
+  <h1>Orçamentos Salvos</h1>
+  <div id="savedBudgetsList"></div>
+  <button id="compareButton">Comparar Orçamentos Selecionados</button>
+
+  <h1>Comparação de Orçamentos</h1>
+  <div id="comparisonResult"></div>
+
+  <script>
+    let savedBudgets = [];
+    let currentItems = [];
+    let products = [];
+
+    const newBudgetForm = document.getElementById("new-budget-form");
+    const supplierNameInput = document.getElementById("supplierName");
+    const currentItemList = document.getElementById("currentItemList");
+    const savedBudgetsListDiv = document.getElementById("savedBudgetsList");
+    const compareButton = document.getElementById("compareButton");
+    const comparisonResultDiv = document.getElementById("comparisonResult");
+
+    // Elementos do modal
+    const openProductModalButton = document.getElementById("openProductModal");
+    const productModal = document.getElementById("productModal");
+    const closeModal = document.getElementById("closeModal");
+    const productListDiv = document.getElementById("productList");
+
+    // Abre o modal de produtos
+    openProductModalButton.addEventListener("click", function() {
+      productModal.style.display = "block";
+    });
+
+    // Fecha o modal ao clicar no "x"
+    closeModal.addEventListener("click", function() {
+      productModal.style.display = "none";
+    });
+
+    // Fecha o modal ao clicar fora dele
+    window.addEventListener("click", function(event) {
+      if (event.target == productModal) {
+        productModal.style.display = "none";
+      }
+    });
+
+    // Busca produtos da API e popula o modal
+    function fetchProducts() {
+      fetch('https://script.google.com/macros/s/AKfycbxlXRx5zku4kmYsvgCPOIZIhcBDctQBJ75rVJBlmRs771-e2dnNyi_HspNIgJ_tdMi_/exec')
+        .then(response => response.json())
+        .then(data => {
+          products = data; // Cada objeto possui as chaves "PRODUTO" e "QUANTIDADE"
+          populateProductModal();
+        })
+        .catch(error => console.error('Erro ao buscar produtos:', error));
+    }
+
+    function populateProductModal() {
+      productListDiv.innerHTML = "";
+      products.forEach((prod, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.style.marginBottom = "10px";
+        itemDiv.innerHTML = `
+          <input type="checkbox" id="prod_${index}" data-index="${index}">
+          <label for="prod_${index}">${prod.PRODUTO} - Quantidade: ${prod.QUANTIDADE}</label>
+          <input type="number" id="price_${index}" placeholder="Valor R$" step="0.01" style="display:none; margin-left:10px;">
+        `;
+        productListDiv.appendChild(itemDiv);
+
+        const checkbox = itemDiv.querySelector(`input[type="checkbox"]`);
+        const priceInput = itemDiv.querySelector(`#price_${index}`);
+        
+        checkbox.addEventListener("change", function() {
+          if (this.checked) {
+            priceInput.style.display = "inline-block";
+          } else {
+            priceInput.style.display = "none";
+            currentItems = currentItems.filter(item => item.index != index);
+            updateCurrentItemList();
+          }
+        });
+        
+        priceInput.addEventListener("change", function() {
+          const price = parseFloat(this.value) || 0;
+          const existingItem = currentItems.find(item => item.index == index);
+          if (existingItem) {
+            existingItem.price = price;
+          } else {
+            currentItems.push({
+              index: index,
+              itemName: prod.PRODUTO,
+              qty: prod.QUANTIDADE,
+              price: price
+            });
+          }
+          updateCurrentItemList();
+        });
+      });
+    }
+
+    function updateCurrentItemList() {
+      currentItemList.innerHTML = "";
+      currentItems.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.itemName} - Quantidade: ${item.qty}, Preço Unitário: R$ ${item.price.toFixed(2)}`;
+        currentItemList.appendChild(li);
+      });
+    }
+
+    // Função para carregar orçamentos já salvos no banco (GET)
+    function loadSavedBudgets() {
+      fetch('https://script.google.com/macros/s/AKfycbwZoRfhhQe8kPWlnMyaRGAhPY1nB9tNaGALl_fgGRe9C2-a2P-buphfJohTLerSa8rBEQ/exec')
+        .then(response => response.json())
+        .then(data => {
+          // Supomos que o retorno seja um array de orçamentos no mesmo formato:
+          // [{supplier:"Fornecedor X", items:[{PRODUTO:"...", QUANTIDADE:..., VALOR:...}, ...]}, ...]
+          savedBudgets = data;
+          updateSavedBudgetsList();
+        })
+        .catch(error => console.error('Erro ao carregar orçamentos salvos:', error));
+    }
+
+    // Ao submeter o orçamento, envia os dados e adiciona ao array de orçamentos salvos
+    newBudgetForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      const supplier = supplierNameInput.value.trim() || "Sem fornecedor";
+      
+      const dataToSend = currentItems.map(item => ({
+        FORNECEDOR: supplier,
+        PRODUTO: item.itemName || "Sem produto",
+        QUANTIDADE: item.qty || 0,
+        VALOR: item.price || 0
+      }));
+
+      // Envia via POST (utilizando no-cors para simplificar)
+      fetch('https://script.google.com/macros/s/AKfycbwZoRfhhQe8kPWlnMyaRGAhPY1nB9tNaGALl_fgGRe9C2-a2P-buphfJohTLerSa8rBEQ/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+        mode: 'no-cors'
+      })
+      .then(() => {
+        alert('Dados enviados! (Verifique a planilha)');
+        // Adiciona o novo orçamento localmente
+        const budgetData = {
+          supplier: supplier,
+          items: currentItems.map(item => ({
+            PRODUTO: item.itemName,
+            QUANTIDADE: item.qty,
+            VALOR: item.price
+          }))
+        };
+        savedBudgets.push(budgetData);
+        updateSavedBudgetsList();
+      })
+      .catch(error => alert('Erro: ' + error));
+      
+      supplierNameInput.value = "";
+      currentItems = [];
+      updateCurrentItemList();
+      document.querySelectorAll('#productList input[type="checkbox"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('#productList input[type="number"]').forEach(pi => {
+        pi.value = "";
+        pi.style.display = "none";
+      });
+    });
+
+    // Exibe os orçamentos salvos com checkbox para seleção
+    function updateSavedBudgetsList() {
+      savedBudgetsListDiv.innerHTML = "";
+      const container = document.createElement("div");
+      container.className = "budget-selection";
+      
+      savedBudgets.forEach((budget, index) => {
+        const card = document.createElement("div");
+        card.className = "budget-card";
+        card.innerHTML = `
+          <input type="checkbox" id="budget_${index}" value="${index}">
+          <label for="budget_${index}">${budget.supplier}</label>
+        `;
+        container.appendChild(card);
+      });
+      
+      savedBudgetsListDiv.appendChild(container);
+    }
+
+    // Ao clicar em comparar, pega os orçamentos selecionados e gera a tabela de comparação
+    compareButton.addEventListener("click", function() {
+      // Atualiza os orçamentos salvos (incluindo os que já estavam no banco)
+      loadSavedBudgets();
+      
+      // Aguarda 1 segundo para garantir que os dados foram carregados
+      setTimeout(() => {
+        const checkboxes = document.querySelectorAll('#savedBudgetsList input[type="checkbox"]:checked');
+        const selectedBudgets = Array.from(checkboxes).map(cb => savedBudgets[cb.value]);
+        if (selectedBudgets.length === 0) {
+          alert("Selecione pelo menos um orçamento!");
+          return;
+        }
+        generateComparisonTable(selectedBudgets);
+      }, 1000);
+    });
+
+    // Gera a tabela de comparação conforme o formato solicitado
+    function generateComparisonTable(budgets) {
+      const table = document.createElement("table");
+      
+      const thead = document.createElement("thead");
+      
+      // Primeira linha: duas células vazias e uma célula com colspan para os fornecedores
+      const headerRow1 = document.createElement("tr");
+      const emptyTh = document.createElement("th");
+      emptyTh.colSpan = 2;
+      headerRow1.appendChild(emptyTh);
+      const suppliersTh = document.createElement("th");
+      suppliersTh.colSpan = budgets.length;
+      suppliersTh.textContent = "FORNECEDORES";
+      headerRow1.appendChild(suppliersTh);
+      thead.appendChild(headerRow1);
+      
+      // Segunda linha: cabeçalhos para PRODUTO, QUANTIDADE e para cada fornecedor
+      const headerRow2 = document.createElement("tr");
+      const thProduto = document.createElement("th");
+      thProduto.textContent = "PRODUTO";
+      headerRow2.appendChild(thProduto);
+      const thQtd = document.createElement("th");
+      thQtd.textContent = "QUANTIDADE";
+      headerRow2.appendChild(thQtd);
+      budgets.forEach(budget => {
+        const thSupplier = document.createElement("th");
+        thSupplier.textContent = budget.supplier;
+        headerRow2.appendChild(thSupplier);
+      });
+      thead.appendChild(headerRow2);
+      
+      table.appendChild(thead);
+      
+      const tbody = document.createElement("tbody");
+      
+      // Para cada produto (usando os dados da API) cria uma linha com os dados
+      products.forEach(prod => {
+        const tr = document.createElement("tr");
+        const tdProduto = document.createElement("td");
+        tdProduto.textContent = prod.PRODUTO;
+        tr.appendChild(tdProduto);
+        const tdQtd = document.createElement("td");
+        tdQtd.textContent = prod.QUANTIDADE;
+        tr.appendChild(tdQtd);
+        
+        budgets.forEach(budget => {
+          const tdValor = document.createElement("td");
+          const item = budget.items.find(i => i.PRODUTO === prod.PRODUTO);
+          tdValor.textContent = item ? item.VALOR : "";
+          tr.appendChild(tdValor);
+        });
+        
+        tbody.appendChild(tr);
+      });
+      
+      table.appendChild(tbody);
+      
+      comparisonResultDiv.innerHTML = "";
+      comparisonResultDiv.appendChild(table);
+    }
+
+    // Inicia carregando produtos e orçamentos salvos
+    fetchProducts();
+    loadSavedBudgets();
+  </script>
+</body>
+</html>
