@@ -12,7 +12,7 @@
       font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f7f7f7;
+      background-color: #f0f2f5;
       color: #333;
     }
     h1, h2, h3 {
@@ -30,8 +30,8 @@
       background: #fff;
       padding: 20px;
       border: 1px solid #ddd;
-      border-radius: 6px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-bottom: 25px;
     }
     label {
@@ -47,21 +47,60 @@
       outline: none;
     }
     input:focus, button:focus {
-      border-color: #999;
+      border-color: #b4c2ff;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
       box-sizing: border-box;
       margin-bottom: 10px;
     }
+    /* Botões com aparência futurista */
     button {
-      background-color: #e0e0e0;
-      color: #333;
+      background: linear-gradient(135deg, #000000 0%, #490000 100%);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: transform 0.2s, box-shadow 0.2s;
     }
     button:hover {
-      background-color: #d4d4d4;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.5);
+    }
+    /* Estilo personalizado para checkboxes */
+    input[type="checkbox"] {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #8ca500;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #2575fc;
+      border-color: #2575fc;
+    }
+    input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid #00ff00;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
     }
     /* Listas e Tabelas */
     .item-list, .budget-list {
@@ -80,33 +119,12 @@
       border-collapse: collapse;
       background: #fff;
       margin-bottom: 30px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     th, td {
       padding: 12px;
-      border: 1px solid #ddd;
+      border: 1px solid #363636;
       text-align: center;
-    }
-    th {
-      background-color: #fafafa;
-    }
-    /* Cartões de Orçamento */
-    .budget-selection {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-    .budget-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px;
-      flex: 1 1 180px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
     /* Modal */
     .modal {
@@ -124,28 +142,35 @@
       background: #fff;
       margin: 10% auto;
       padding: 20px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      border: 1px solid #000000;
+      border-radius: 12px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 18px rgb(121, 121, 121);
     }
     .modal-content h2 {
       font-size: 1.6rem;
       margin-top: 0;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 1px solid #757575;
       padding-bottom: 10px;
       margin-bottom: 15px;
     }
     .close {
-      color: #666;
-      float: right;
-      font-size: 28px;
-      font-weight: 500;
+      color: #fff;
+      background-color: #2575fc;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.3s;
+      float: right;
     }
     .close:hover {
-      color: #333;
+      background-color: #2a2530;
     }
     /* Overlay para bloqueio de interações */
     #overlay {
@@ -156,11 +181,38 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgb(0, 255, 0);
       color: #fff;
       font-size: 1.5rem;
       text-align: center;
       padding-top: 200px;
+    }
+    /* Estilos para a Tabela de Comparação de Orçamentos */
+    #comparisonResult table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #comparisonResult th, #comparisonResult td {
+      padding: 12px;
+      border: 1px solid #363636;
+      text-align: center;
+    }
+    /* Títulos com cinza escuro */
+    #comparisonResult thead th {
+      background-color: #9e9e9e; /* Cinza escuro */
+      color: #000000;
+    }
+    /* Linhas de dados com cinza bem claro */
+    #comparisonResult tbody tr {
+      background-color: #f5f5f5; /* Cinza muito claro */
+    }
+    /* Linha de total com cinza escuro */
+    #comparisonResult tbody tr:last-child {
+      background-color: #9e9e9e; /* Cinza escuro */
+      color: #000000;
+      font-weight: bold;
     }
   </style>
 </head>
