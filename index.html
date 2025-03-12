@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orçamentos de Construção</title>
-  <!-- Fonte moderna -->
+  <title>Orçamento e Controle de Gastos</title>
+  <!-- Fonte Moderna -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-
-    /* Estilos Gerais */
+    /* ================================ 
+       Estilos Gerais (Combinados)
+    ================================ */
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -26,7 +27,6 @@
     h2, h3 {
       font-size: 1.4rem;
     }
-    /* Formulários e Containers */
     form {
       background: #fff;
       padding: 20px;
@@ -55,9 +55,8 @@
       box-sizing: border-box;
       margin-bottom: 10px;
     }
-    /* Botões com aparência futurista */
     button {
-      background: linear-gradient(135deg, #000000 0%, #490000 100%);
+      background: linear-gradient(135deg, #000 0%, #490000 100%);
       color: #fff;
       border: none;
       border-radius: 25px;
@@ -73,7 +72,6 @@
       outline: none;
       box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.5);
     }
-    /* Estilo personalizado para checkboxes */
     input[type="checkbox"] {
       -webkit-appearance: none;
       -moz-appearance: none;
@@ -103,10 +101,6 @@
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
     }
-    /* Listas e Tabelas */
-    .item-list, .budget-list {
-      margin-top: 15px;
-    }
     ul {
       list-style: none;
       padding-left: 0;
@@ -115,19 +109,9 @@
       padding: 6px 0;
       border-bottom: 1px solid #eee;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fff;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #363636;
-      text-align: center;
-    }
-    /* Modal */
+    /* ================================
+       Modal e Itens do Orçamento
+    ================================ */
     .modal {
       display: none; 
       position: fixed; 
@@ -143,11 +127,11 @@
       background: #fff;
       margin: 10% auto;
       padding: 20px;
-      border: 1px solid #000000;
+      border: 1px solid #000;
       border-radius: 12px;
       width: 90%;
       max-width: 500px;
-      box-shadow: 0 6px 18px rgb(121, 121, 121);
+      box-shadow: 0 6px 18px rgba(121, 121, 121);
     }
     .modal-content h2 {
       font-size: 1.6rem;
@@ -173,7 +157,6 @@
     .close:hover {
       background-color: #2a2530;
     }
-    /* Overlay para bloqueio de interações */
     #overlay {
       display: none;
       position: fixed;
@@ -188,7 +171,9 @@
       text-align: center;
       padding-top: 200px;
     }
-    /* Estilos para a Tabela de Comparação de Orçamentos */
+    /* ================================
+       Tabelas de Comparação e Gastos
+    ================================ */
     #comparisonResult table {
       width: 100%;
       border-collapse: collapse;
@@ -200,32 +185,55 @@
       border: 1px solid #c7c7c7;
       text-align: center;
     }
-    /* Títulos com cinza escuro */
     #comparisonResult thead th {
-      background-color: #b6b6b6; /* Cinza escuro */
-      color: #000000;
+      background-color: #b6b6b6;
+      color: #000;
     }
-    /* Linhas de dados com cinza bem claro */
     #comparisonResult tbody tr {
-      background-color: #ffffff; /* Cinza muito claro */
+      background-color: #ffffff;
     }
-    /* Linha de total com cinza escuro */
     #comparisonResult tbody tr:last-child {
-      background-color: #b3b3b3; /* Cinza escuro */
-      color: #000000;
+      background-color: #b3b3b3;
+      color: #000;
       font-weight: bold;
     }
-
-    /* Destaque para a seção de Orçamentos Salvos */
-    #savedBudgetsList {
+    /* ================================
+       Estilo da Tabela de Gastos (Replicando a Comparação)
+    ================================ */
+    #expenses-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #expenses-table th, #expenses-table td {
+      padding: 12px;
+      border: 1px solid #c7c7c7;
+      text-align: center;
+    }
+    #expenses-table thead th {
+      background-color: #b6b6b6;
+      color: #000;
+    }
+    #expenses-table tbody tr {
       background-color: #ffffff;
+    }
+    #expenses-table tfoot td {
+      background-color: #b3b3b3;
+      color: #000;
+      font-weight: bold;
+    }
+    /* ================================
+       Seção de Orçamentos Salvos
+    ================================ */
+    #savedBudgetsList {
+      background-color: #fff;
       border: 2px solid #c2c2c2;
       padding: 15px;
       border-radius: 10px;
       margin-bottom: 25px;
     }
- /* Organização horizontal dos orçamentos salvos */
- .budget-selection {
+    .budget-selection {
       display: flex;
       flex-wrap: wrap;
       gap: 15px;
@@ -236,96 +244,150 @@
       border-radius: 8px;
       background-color: #fff;
     }
-
-
-    
-    /* Estilo para a navegação */
-
+    /* ================================
+       Menu de Navegação
+    ================================ */
+    nav {
+      margin-bottom: 20px;
+    }
     nav a {
-        color: #949494;
-        text-decoration: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-        font-family: 'Segoe UI', sans-serif;
-        font-weight: 500;
-        font-size: 1.1em;
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 500;
+      font-size: 1.1em;
+      margin-right: 10px;
+      /* Os botões já aparecem com background preto e letras brancas */
     }
-
-    nav a:hover {
-        background-color: #34495e;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    /* Para indicar a página ativa, usamos a classe "active" */
+    nav a.active {
+      background-color: #444;
     }
-
-    nav a:active {
-        transform: translateY(0);
-        background-color: #2c3e50;
-    }
-
-    /* Estilo para página ativa */
-    nav a[href="controle_de_gastos.html"] {
-        background-color: #00416d;
-    }
-
-    /* Responsividade */
     @media (max-width: 768px) {
-        nav {
-            padding: 10px;
-        }
-        nav a {
-            font-size: 1em;
-            padding: 8px 15px;
-        }
+      nav a {
+        font-size: 1em;
+        padding: 8px 15px;
+      }
     }
-    
-
-
   </style>
 </head>
-<nav>
-  <a href="controle_de_gastos.html">Controle de Gastos</a>
-</nav>
 <body>
-  <h1>Novo Orçamento</h1>
-  <form id="new-budget-form">
-    <label>
-      Fornecedor:
-      <input type="text" id="supplierName" placeholder="Digite o nome do fornecedor">
-    </label>
-    <!-- Botão para abrir o modal de produtos -->
-    <button type="button" id="openProductModal">Selecionar Produtos</button>
+  <!-- Menu de Navegação Unificado -->
+  <nav>
+    <a href="#" id="linkOrcamento" class="active">Orçamento</a>
+    <a href="#" id="linkControle">Controle de Gastos</a>
+  </nav>
+
+  <!-- Seção Orçamento (Código 1) -->
+  <section id="sectionOrcamento">
+    <h1>Novo Orçamento</h1>
+    <form id="new-budget-form">
+      <label>
+        Fornecedor:
+        <input type="text" id="supplierName" placeholder="Digite o nome do fornecedor">
+      </label>
+      <!-- Botão para abrir o modal de produtos -->
+      <button type="button" id="openProductModal">Selecionar Produtos</button>
+      
+      <div class="item-list">
+        <h3>Itens Adicionados</h3>
+        <ul id="currentItemList"></ul>
+      </div>
+      <button type="submit" id="saveButton">Salvar Orçamento</button>
+    </form>
+
+    <!-- Modal de Produtos -->
+    <div id="productModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Selecione os Produtos</h2>
+        <div id="productList"></div>
+      </div>
+    </div>
+
+    <h1>Orçamentos Salvos</h1>
+    <div id="savedBudgetsList"></div>
+    <button id="compareButton">Comparar Orçamentos Selecionados</button>
+
+    <h1>Comparação de Orçamentos</h1>
+    <div id="comparisonResult"></div>
+
+    <!-- Overlay para bloqueio de interações -->
+    <div id="overlay">Aguarde, os dados estão sendo salvos...</div>
+  </section>
+
+  <!-- Seção Controle de Gastos (Código 2) -->
+  <section id="sectionControle" style="display: none;">
+    <h1>Controle de Gastos</h1>
+    <form id="expense-form">
+      <label for="expense-description">Descrição do Gasto:</label>
+      <input type="text" id="expense-description" placeholder="Ex: Compra de materiais" required>
+      
+      <label for="expense-category">Categoria:</label>
+      <input type="text" id="expense-category" placeholder="Ex: Materiais, Mão de Obra, etc." required>
+      
+      <label for="expense-amount">Valor (R$):</label>
+      <input type="number" id="expense-amount" step="0.01" placeholder="Ex: 150.00" required>
+      
+      <button type="submit">Salvar Gasto</button>
+    </form>
     
-    <div class="item-list">
-      <h3>Itens Adicionados</h3>
-      <ul id="currentItemList"></ul>
-    </div>
-    <button type="submit" id="saveButton">Salvar Orçamento</button>
-  </form>
+    <h2>Gastos Salvos</h2>
+    <table id="expenses-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Os dados serão inseridos via JavaScript -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">TOTAL</td>
+          <td id="total-expenses">R$ 0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
 
-
-  <!-- Modal de Produtos com design aprimorado -->
-  <div id="productModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="closeModal">&times;</span>
-      <h2>Selecione os Produtos</h2>
-      <div id="productList"></div>
-    </div>
-  </div>
-
-  <h1>Orçamentos Salvos</h1>
-  <div id="savedBudgetsList"></div>
-  <button id="compareButton">Comparar Orçamentos Selecionados</button>
-
-  <h1>Comparação de Orçamentos</h1>
-  <div id="comparisonResult"></div>
-
-  <!-- Overlay para bloquear interações durante o envio -->
-  <div id="overlay">Aguarde, os dados estão sendo salvos...</div>
-
+  <!-- Scripts Combinados -->
   <script>
+    /* ---------------------------------
+       Alternar entre Seções via Navegação
+    ---------------------------------- */
+    const linkOrcamento = document.getElementById("linkOrcamento");
+    const linkControle = document.getElementById("linkControle");
+    const sectionOrcamento = document.getElementById("sectionOrcamento");
+    const sectionControle = document.getElementById("sectionControle");
+
+    linkOrcamento.addEventListener("click", function(e) {
+      e.preventDefault();
+      sectionOrcamento.style.display = "block";
+      sectionControle.style.display = "none";
+      linkOrcamento.classList.add("active");
+      linkControle.classList.remove("active");
+    });
+    linkControle.addEventListener("click", function(e) {
+      e.preventDefault();
+      sectionOrcamento.style.display = "none";
+      sectionControle.style.display = "block";
+      linkControle.classList.add("active");
+      linkOrcamento.classList.remove("active");
+    });
+
+    /* =============================
+       Código de Orçamentos (Código 1)
+    ============================= */
     let savedBudgets = [];
-    let displayedBudgets = [];  // Armazena os orçamentos filtrados (sem header "FORNECEDOR")
+    let displayedBudgets = [];
     let currentItems = [];
     let products = [];
 
@@ -337,35 +399,28 @@
     const comparisonResultDiv = document.getElementById("comparisonResult");
     const overlay = document.getElementById("overlay");
 
-    // Elementos do modal
     const openProductModalButton = document.getElementById("openProductModal");
     const productModal = document.getElementById("productModal");
     const closeModal = document.getElementById("closeModal");
     const productListDiv = document.getElementById("productList");
 
-    // Abre o modal de produtos
     openProductModalButton.addEventListener("click", function() {
       productModal.style.display = "block";
     });
-
-    // Fecha o modal ao clicar no "x"
     closeModal.addEventListener("click", function() {
       productModal.style.display = "none";
     });
-
-    // Fecha o modal ao clicar fora dele
     window.addEventListener("click", function(event) {
       if (event.target == productModal) {
         productModal.style.display = "none";
       }
     });
 
-    // Busca produtos da API e popula o modal
     function fetchProducts() {
       fetch('https://script.google.com/macros/s/AKfycbxlXRx5zku4kmYsvgCPOIZIhcBDctQBJ75rVJBlmRs771-e2dnNyi_HspNIgJ_tdMi_/exec')
         .then(response => response.json())
         .then(data => {
-          products = data; // Cada objeto possui as chaves "PRODUTO" e "QUANTIDADE"
+          products = data;
           populateProductModal();
         })
         .catch(error => console.error('Erro ao buscar produtos:', error));
@@ -423,24 +478,18 @@
       });
     }
 
-    // Função para carregar orçamentos já salvos no banco (GET)
     function loadSavedBudgets() {
       fetch('https://script.google.com/macros/s/AKfycbzHWk-CEI4_Ixv2pIFzIGD4Pz3qOnGhQx1KRQXNu-LZ2L3WfJS24bXep7jUuFzs7t_kGA/exec')
         .then(response => response.json())
         .then(data => {
-          // O retorno esperado é um array de orçamentos:
-          // [{ supplier: "Fornecedor X", items: [{PRODUTO:"...", QUANTIDADE:..., VALOR:...}, ...] }, ...]
           savedBudgets = data;
           updateSavedBudgetsList();
         })
         .catch(error => console.error('Erro ao carregar orçamentos salvos:', error));
     }
 
-    // Ao submeter o orçamento, envia os dados e adiciona ao array de orçamentos salvos
     newBudgetForm.addEventListener("submit", function(e) {
       e.preventDefault();
-      
-      // Bloqueia interações e exibe mensagem de aguarde
       overlay.style.display = "block";
       
       const supplier = supplierNameInput.value.trim() || "Sem fornecedor";
@@ -452,7 +501,6 @@
         VALOR: item.price || 0
       }));
 
-      // Envia via POST (utilizando no-cors para simplificar)
       fetch('https://script.google.com/macros/s/AKfycbwZoRfhhQe8kPWlnMyaRGAhPY1nB9tNaGALl_fgGRe9C2-a2P-buphfJohTLerSa8rBEQ/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -461,7 +509,6 @@
       })
       .then(() => {
         alert('Dados enviados! (Verifique a planilha)');
-        // Adiciona o novo orçamento localmente
         const budgetData = {
           supplier: supplier,
           items: currentItems.map(item => ({
@@ -472,12 +519,10 @@
         };
         savedBudgets.push(budgetData);
         updateSavedBudgetsList();
-        // Reabilita as interações removendo o overlay
         overlay.style.display = "none";
       })
       .catch(error => {
         alert('Erro: ' + error);
-        // Reabilita as interações removendo o overlay
         overlay.style.display = "none";
       });
       
@@ -491,13 +536,11 @@
       });
     });
 
-    // Exibe os orçamentos salvos com checkbox para seleção, filtrando a opção "FORNECEDOR"
     function updateSavedBudgetsList() {
       savedBudgetsListDiv.innerHTML = "";
       const container = document.createElement("div");
       container.className = "budget-selection";
       
-      // Filtra para não exibir o header "FORNECEDOR"
       displayedBudgets = savedBudgets.filter(budget => budget.supplier.toUpperCase() !== "FORNECEDOR");
       
       displayedBudgets.forEach((budget, index) => {
@@ -513,12 +556,8 @@
       savedBudgetsListDiv.appendChild(container);
     }
 
-    // Ao clicar em comparar, pega os orçamentos selecionados e gera a tabela de comparação
     compareButton.addEventListener("click", function() {
-      // Atualiza os orçamentos salvos (incluindo os que já estavam no banco)
       loadSavedBudgets();
-      
-      // Aguarda 1 segundo para garantir que os dados foram carregados
       setTimeout(() => {
         const checkboxes = document.querySelectorAll('#savedBudgetsList input[type="checkbox"]:checked');
         const selectedBudgets = Array.from(checkboxes).map(cb => displayedBudgets[cb.value]);
@@ -530,13 +569,11 @@
       }, 1000);
     });
 
-    // Gera a tabela de comparação conforme o formato solicitado, destacando o menor valor de cada produto e somando os totais
     function generateComparisonTable(budgets) {
       const table = document.createElement("table");
       
       const thead = document.createElement("thead");
       
-      // Primeira linha: duas células vazias e uma célula com colspan para os fornecedores
       const headerRow1 = document.createElement("tr");
       const emptyTh = document.createElement("th");
       emptyTh.colSpan = 2;
@@ -547,7 +584,6 @@
       headerRow1.appendChild(suppliersTh);
       thead.appendChild(headerRow1);
       
-      // Segunda linha: cabeçalhos para PRODUTO, QUANTIDADE e para cada fornecedor
       const headerRow2 = document.createElement("tr");
       const thProduto = document.createElement("th");
       thProduto.textContent = "PRODUTO";
@@ -566,10 +602,8 @@
       
       const tbody = document.createElement("tbody");
       
-      // Inicializa os totais para cada fornecedor
       let supplierSums = new Array(budgets.length).fill(0);
       
-      // Para cada produto (usando os dados da API de produtos) cria uma linha com os dados
       products.forEach(prod => {
         const tr = document.createElement("tr");
         const tdProduto = document.createElement("td");
@@ -600,12 +634,11 @@
           tr.appendChild(tdValor);
         });
         
-        // Destaca o(s) menor(es) valor(es) entre os fornecedores para este produto
         const minValue = Math.min(...supplierCells.map(obj => obj.value));
         if (minValue !== Infinity) {
           supplierCells.forEach(obj => {
             if (obj.value === minValue) {
-              obj.cell.style.backgroundColor = "#d4f4d4"; // verde claro
+              obj.cell.style.backgroundColor = "#d4f4d4";
             }
           });
         }
@@ -613,7 +646,6 @@
         tbody.appendChild(tr);
       });
       
-      // Adiciona a linha de totais
       const totalRow = document.createElement("tr");
       const totalLabelTd = document.createElement("td");
       totalLabelTd.colSpan = 2;
@@ -634,9 +666,104 @@
       comparisonResultDiv.appendChild(table);
     }
 
-    // Inicia carregando produtos e orçamentos salvos
     fetchProducts();
     loadSavedBudgets();
+
+    /* ==================================
+       Código de Controle de Gastos (Código 2)
+    ================================== */
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxKreJ9mUvq1nutCeMjlVfN-WB8YiRE956qZL4zS1DZHsjHLD6QZyEenWY6sjDfIA4KqQ/exec';
+    
+    const expenseForm = document.getElementById('expense-form');
+    const expensesTableBody = document.querySelector('#expenses-table tbody');
+    const totalExpensesEl = document.getElementById('total-expenses');
+    
+    let totalExpenses = 0;
+    
+    function carregarGastos() {
+      fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+          expensesTableBody.innerHTML = '';
+          totalExpenses = 0;
+    
+          data.forEach(item => {
+            let dataRegistro = new Date(item.data);
+            if (isNaN(dataRegistro)) {
+              dataRegistro = "Data Inválida";
+            } else {
+              dataRegistro = dataRegistro.toLocaleDateString('pt-BR');
+            }
+            adicionarLinhaTabela(dataRegistro, item.descricao, item.categoria, parseFloat(item.valor));
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+    }
+    
+    function adicionarLinhaTabela(data, descricao, categoria, valor) {
+      const tr = document.createElement('tr');
+    
+      const tdData = document.createElement('td');
+      tdData.textContent = data;
+    
+      const tdDesc = document.createElement('td');
+      tdDesc.textContent = descricao;
+    
+      const tdCat = document.createElement('td');
+      tdCat.textContent = categoria;
+    
+      const tdValor = document.createElement('td');
+      tdValor.textContent = valor.toFixed(2);
+    
+      tr.appendChild(tdData);
+      tr.appendChild(tdDesc);
+      tr.appendChild(tdCat);
+      tr.appendChild(tdValor);
+      expensesTableBody.appendChild(tr);
+    
+      totalExpenses += valor;
+      totalExpensesEl.textContent = "R$ " + totalExpenses.toFixed(2);
+    }
+    
+    document.addEventListener('DOMContentLoaded', carregarGastos);
+    
+    expenseForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const description = document.getElementById('expense-description').value.trim();
+      const category = document.getElementById('expense-category').value.trim();
+      const amount = parseFloat(document.getElementById('expense-amount').value);
+      
+      if (!description || !category || isNaN(amount) || amount <= 0) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+      }
+      
+      const data = {
+        descricao: description,
+        categoria: category,
+        valor: amount
+      };
+      
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        const dataAtual = new Date().toLocaleDateString('pt-BR');
+        adicionarLinhaTabela(dataAtual, description, category, amount);
+        expenseForm.reset();
+        alert('Gasto salvo com sucesso!');
+      })
+      .catch(error => {
+        console.error('Erro ao salvar gasto:', error);
+        alert('Erro ao salvar o gasto.');
+      });
+    });
   </script>
 </body>
 </html>
