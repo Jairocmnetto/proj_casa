@@ -1,354 +1,770 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciamento de Produtos</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { padding: 20px; background-color: #f8f9fa; }
-        .product-image-preview { max-width: 100px; max-height: 100px; margin-top: 10px; }
-        .action-buttons { display: flex; gap: 5px; }
-        .spinner { display: none; width: 1.5rem; height: 1.5rem; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orçamento e Controle de Gastos</title>
+  <!-- Fonte Moderna -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ================================ 
+       Estilos Gerais (Combinados)
+    ================================ */
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+    h1, h2, h3 {
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+    h1 {
+      font-size: 1.8rem;
+    }
+    h2, h3 {
+      font-size: 1.4rem;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 400;
+    }
+    input, button {
+      font-size: 1rem;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      outline: none;
+    }
+    input:focus, button:focus {
+      border-color: #b4c2ff;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 10px;
+    }
+    button {
+      background: linear-gradient(135deg, #cad2ff 0%, #cad2ff 100%);
+      color: #000000;
+      font-weight: bold;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.5);
+    }
+    input[type="checkbox"] {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #8ca500;
+      border-radius: 4px;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.3s ease;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #2575fc;
+      border-color: #2575fc;
+    }
+    input[type="checkbox"]:checked::after {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid #00ff00;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    li {
+      padding: 6px 0;
+      border-bottom: 1px solid #eee;
+    }
+    /* ================================
+       Modal e Itens do Orçamento
+    ================================ */
+    .modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      overflow: auto;
+    }
+    .modal-content {
+      background: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border: 1px solid #000;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 6px 18px rgba(121, 121, 121);
+    }
+    .modal-content h2 {
+      font-size: 1.6rem;
+      margin-top: 0;
+      border-bottom: 1px solid #757575;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+    .close {
+      color: #fff;
+      background-color: #2575fc;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background-color 0.3s;
+      float: right;
+    }
+    .close:hover {
+      background-color: #2a2530;
+    }
+    #overlay {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgb(189, 189, 189);
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      padding-top: 200px;
+    }
+    /* ================================
+       Tabelas de Comparação e Gastos
+    ================================ */
+    #comparisonResult table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #comparisonResult th, #comparisonResult td {
+      padding: 12px;
+      border: 1px solid #c7c7c7;
+      text-align: center;
+    }
+    #comparisonResult thead th {
+      background-color: #b6b6b6;
+      color: #000;
+    }
+    #comparisonResult tbody tr {
+      background-color: #ffffff;
+    }
+    #comparisonResult tbody tr:last-child {
+      background-color: #b3b3b3;
+      color: #000;
+      font-weight: bold;
+    }
+    /* ================================
+       Estilo da Tabela de Gastos (Replicando a Comparação)
+    ================================ */
+    #expenses-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    #expenses-table th, #expenses-table td {
+      padding: 12px;
+      border: 1px solid #c7c7c7;
+      text-align: center;
+    }
+    #expenses-table thead th {
+      background-color: #b6b6b6;
+      color: #000;
+    }
+    #expenses-table tbody tr {
+      background-color: #ffffff;
+    }
+    #expenses-table tfoot td {
+      background-color: #b3b3b3;
+      color: #000;
+      font-weight: bold;
+    }
+    /* ================================
+       Seção de Orçamentos Salvos
+    ================================ */
+    #savedBudgetsList {
+      background-color: #fff;
+      border: 2px solid #c2c2c2;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+    .budget-selection {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    .budget-card {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+    /* ================================
+       Menu de Navegação
+    ================================ */
+    nav {
+      margin-bottom: 20px;
+    }
+    nav a {
+      background: #000;
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', sans-serif;
+      font-weight: 500;
+      font-size: 1.1em;
+      margin-right: 10px;
+      /* Os botões já aparecem com background preto e letras brancas */
+    }
+    /* Para indicar a página ativa, usamos a classe "active" */
+    nav a.active {
+      background-color: #444;
+    }
+    @media (max-width: 768px) {
+      nav a {
+        font-size: 1em;
+        padding: 8px 15px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="my-4">Gerenciamento de Produtos</h1>
-        
-        <div class="mb-4">
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal" onclick="resetForm()">
-                Adicionar Novo Produto
-            </button>
-        </div>
-        
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Preço</th>
-                        <th>Categoria</th>
-                        <th>Desconto</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="productsTable">
-                    <tr>
-                        <td colspan="6" class="text-center">Carregando produtos...</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <!-- Menu de Navegação Unificado -->
+  <nav>
+    <a href="#" id="linkOrcamento" class="active">Orçamento</a>
+    <a href="#" id="linkControle">Controle de Gastos</a>
+  </nav>
+
+  <!-- Seção Orçamento (Código 1) -->
+  <section id="sectionOrcamento">
+    <h1>Novo Orçamento</h1>
+    <form id="new-budget-form">
+      <label>
+        Fornecedor:
+        <input type="text" id="supplierName" placeholder="Digite o nome do fornecedor">
+      </label>
+      <!-- Botão para abrir o modal de produtos -->
+      <button type="button" id="openProductModal">Selecionar Produtos</button>
+      
+      <div class="item-list">
+        <h3>Itens Adicionados</h3>
+        <ul id="currentItemList"></ul>
+      </div>
+      <button type="submit" id="saveButton">Salvar Orçamento</button>
+    </form>
+
+    <!-- Modal de Produtos -->
+    <div id="productModal" class="modal">
+      <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <h2>Selecione os Produtos</h2>
+        <div id="productList"></div>
+      </div>
     </div>
 
-    <!-- Modal para adicionar/editar produto -->
-    <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Adicionar Produto</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="productForm">
-                        <input type="hidden" id="productId">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="id" class="form-label">ID*</label>
-                                    <input type="text" class="form-control" id="id" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="nome" class="form-label">Nome*</label>
-                                    <input type="text" class="form-control" id="nome" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="descricao" class="form-label">Descrição</label>
-                                    <textarea class="form-control" id="descricao" rows="3"></textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="preco" class="form-label">Preço*</label>
-                                    <input type="number" class="form-control" id="preco" step="0.01" required>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="categoria" class="form-label">Categoria*</label>
-                                    <select class="form-select" id="categoria" required>
-                                        <option value="">Selecione...</option>
-                                        <option value="bolos">Bolos</option>
-                                        <option value="doces">Doces</option>
-                                        <option value="tortas">Tortas</option>
-                                        <option value="sobremesas">Sobremesas</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="imagem" class="form-label">URL da Imagem</label>
-                                    <input type="url" class="form-control" id="imagem">
-                                    <img id="imagePreview" class="product-image-preview d-none">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="descontos" class="form-label">Desconto (%)</label>
-                                    <input type="number" class="form-control" id="descontos" min="0" max="100" step="1">
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="preco_tamanhos_p" class="form-label">Preço Tamanho P</label>
-                                            <input type="number" class="form-control" id="preco_tamanhos_p" step="0.01">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="preco_tamanhos_m" class="form-label">Preço Tamanho M</label>
-                                            <input type="number" class="form-control" id="preco_tamanhos_m" step="0.01">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label for="preco_tamanhos_g" class="form-label">Preço Tamanho G</label>
-                                            <input type="number" class="form-control" id="preco_tamanhos_g" step="0.01">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tempo_promocao" class="form-label">Tempo de Promoção (dias)</label>
-                                    <input type="number" class="form-control" id="tempo_promocao">
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="saveButton">
-                        <span class="spinner-border spinner-border-sm spinner" role="status"></span>
-                        Salvar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <h1>Orçamentos Salvos</h1>
+    <div id="savedBudgetsList"></div>
+    <button id="compareButton">Comparar Orçamentos Selecionados</button>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // URL do seu Google Apps Script (PUBLICADO!)
-        const API_URL = "https://script.google.com/macros/s/AKfycbxtpV1_n7iJYvgIVq1yy1X_Hnc4MpHLTG1XIRyu0bkwvBGUvfFA-d7t10_xj1Z9Cz9E/exec";
+    <h1>Comparação de Orçamentos</h1>
+    <div id="comparisonResult"></div>
 
-        // Elementos DOM
-        const productsTable = document.getElementById('productsTable');
-        const productForm = document.getElementById('productForm');
-        const saveButton = document.getElementById('saveButton');
-        const spinner = saveButton.querySelector('.spinner');
-        const modalTitle = document.getElementById('modalTitle');
-        const imagePreview = document.getElementById('imagePreview');
+    <!-- Overlay para bloqueio de interações -->
+    <div id="overlay">Aguarde, os dados estão sendo salvos...</div>
+  </section>
+
+  <!-- Seção Controle de Gastos (Código 2) -->
+  <section id="sectionControle" style="display: none;">
+    <h1>Controle de Gastos</h1>
+    <form id="expense-form">
+      <label for="expense-description">Descrição do Gasto:</label>
+      <input type="text" id="expense-description" placeholder="Ex: Compra de materiais" required>
+      
+      <label for="expense-category">Categoria:</label>
+      <input type="text" id="expense-category" placeholder="Ex: Materiais, Mão de Obra, etc." required>
+      
+      <label for="expense-amount">Valor (R$):</label>
+      <input type="number" id="expense-amount" step="0.01" placeholder="Ex: 150.00" required>
+      
+      <button type="submit">Salvar Gasto</button>
+    </form>
+    
+    <h2>Gastos Salvos</h2>
+    <table id="expenses-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Descrição</th>
+          <th>Categoria</th>
+          <th>Valor (R$)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Os dados serão inseridos via JavaScript -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">TOTAL</td>
+          <td id="total-expenses">R$ 0.00</td>
+        </tr>
+      </tfoot>
+    </table>
+  </section>
+
+  <!-- Scripts Combinados -->
+  <script>
+    /* ---------------------------------
+       Alternar entre Seções via Navegação
+    ---------------------------------- */
+    const linkOrcamento = document.getElementById("linkOrcamento");
+    const linkControle = document.getElementById("linkControle");
+    const sectionOrcamento = document.getElementById("sectionOrcamento");
+    const sectionControle = document.getElementById("sectionControle");
+
+    linkOrcamento.addEventListener("click", function(e) {
+      e.preventDefault();
+      sectionOrcamento.style.display = "block";
+      sectionControle.style.display = "none";
+      linkOrcamento.classList.add("active");
+      linkControle.classList.remove("active");
+    });
+    linkControle.addEventListener("click", function(e) {
+      e.preventDefault();
+      sectionOrcamento.style.display = "none";
+      sectionControle.style.display = "block";
+      linkControle.classList.add("active");
+      linkOrcamento.classList.remove("active");
+    });
+
+    /* =============================
+       Código de Orçamentos (Código 1)
+    ============================= */
+    let savedBudgets = [];
+    let displayedBudgets = [];
+    let currentItems = [];
+    let products = [];
+
+    const newBudgetForm = document.getElementById("new-budget-form");
+    const supplierNameInput = document.getElementById("supplierName");
+    const currentItemList = document.getElementById("currentItemList");
+    const savedBudgetsListDiv = document.getElementById("savedBudgetsList");
+    const compareButton = document.getElementById("compareButton");
+    const comparisonResultDiv = document.getElementById("comparisonResult");
+    const overlay = document.getElementById("overlay");
+
+    const openProductModalButton = document.getElementById("openProductModal");
+    const productModal = document.getElementById("productModal");
+    const closeModal = document.getElementById("closeModal");
+    const productListDiv = document.getElementById("productList");
+
+    openProductModalButton.addEventListener("click", function() {
+      productModal.style.display = "block";
+    });
+    closeModal.addEventListener("click", function() {
+      productModal.style.display = "none";
+    });
+    window.addEventListener("click", function(event) {
+      if (event.target == productModal) {
+        productModal.style.display = "none";
+      }
+    });
+
+    function fetchProducts() {
+      fetch('https://script.google.com/macros/s/AKfycbxlXRx5zku4kmYsvgCPOIZIhcBDctQBJ75rVJBlmRs771-e2dnNyi_HspNIgJ_tdMi_/exec')
+        .then(response => response.json())
+        .then(data => {
+          products = data;
+          populateProductModal();
+        })
+        .catch(error => console.error('Erro ao buscar produtos:', error));
+    }
+
+    function populateProductModal() {
+      productListDiv.innerHTML = "";
+      products.forEach((prod, index) => {
+        const itemDiv = document.createElement("div");
+        itemDiv.style.marginBottom = "10px";
+        itemDiv.innerHTML = `
+          <input type="checkbox" id="prod_${index}" data-index="${index}">
+          <label for="prod_${index}">${prod.PRODUTO} - Quantidade: ${prod.QUANTIDADE}</label>
+          <input type="number" id="price_${index}" placeholder="Valor R$" step="0.01" style="display:none; margin-left:10px;">
+        `;
+        productListDiv.appendChild(itemDiv);
+
+        const checkbox = itemDiv.querySelector(`input[type="checkbox"]`);
+        const priceInput = itemDiv.querySelector(`#price_${index}`);
         
-        // Carregar produtos ao iniciar
-        document.addEventListener('DOMContentLoaded', loadProducts);
-        
-        // Preview da imagem
-        document.getElementById('imagem').addEventListener('input', function() {
-            if (this.value) {
-                imagePreview.src = this.value;
-                imagePreview.classList.remove('d-none');
-            } else {
-                imagePreview.classList.add('d-none');
-            }
+        checkbox.addEventListener("change", function() {
+          if (this.checked) {
+            priceInput.style.display = "inline-block";
+          } else {
+            priceInput.style.display = "none";
+            currentItems = currentItems.filter(item => item.index != index);
+            updateCurrentItemList();
+          }
         });
         
-        // Evento do botão salvar
-        saveButton.addEventListener('click', saveProduct);
-        
-        // Carregar produtos da API
-        async function loadProducts() {
-            try {
-                const response = await fetch(`${API_URL}?action=getProducts`);
-                const products = await response.json();
-                renderProducts(products);
-            } catch (error) {
-                showError('Erro ao carregar produtos: ' + error.message);
-            }
-        }
-        
-        // Renderizar tabela de produtos
-        function renderProducts(products) {
-            if (!Array.isArray(products)) {
-                showError('Resposta inválida da API: ' + JSON.stringify(products));
-                return;
-            }
-            
-            if (products.length === 0) {
-                productsTable.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center">Nenhum produto encontrado</td>
-                    </tr>
-                `;
-                return;
-            }
-            
-            let html = '';
-            products.forEach(product => {
-                html += `
-                    <tr>
-                        <td>${product.id || ''}</td>
-                        <td>${product.nome || ''}</td>
-                        <td>R$ ${product.preco ? parseFloat(product.preco).toFixed(2) : '0.00'}</td>
-                        <td>${product.categoria || ''}</td>
-                        <td>${product.descontos || 0}%</td>
-                        <td class="action-buttons">
-                            <button class="btn btn-sm btn-warning" onclick="editProduct('${product.id}')">Editar</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteProduct('${product.id}')">Excluir</button>
-                        </td>
-                    </tr>
-                `;
+        priceInput.addEventListener("change", function() {
+          const price = parseFloat(this.value) || 0;
+          const existingItem = currentItems.find(item => item.index == index);
+          if (existingItem) {
+            existingItem.price = price;
+          } else {
+            currentItems.push({
+              index: index,
+              itemName: prod.PRODUTO,
+              qty: prod.QUANTIDADE,
+              price: price
             });
-            
-            productsTable.innerHTML = html;
+          }
+          updateCurrentItemList();
+        });
+      });
+    }
+
+    function updateCurrentItemList() {
+      currentItemList.innerHTML = "";
+      currentItems.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.itemName} - Quantidade: ${item.qty}, Preço Unitário: R$ ${item.price.toFixed(2)}`;
+        currentItemList.appendChild(li);
+      });
+    }
+
+    function loadSavedBudgets() {
+      fetch('https://script.google.com/macros/s/AKfycbzHWk-CEI4_Ixv2pIFzIGD4Pz3qOnGhQx1KRQXNu-LZ2L3WfJS24bXep7jUuFzs7t_kGA/exec')
+        .then(response => response.json())
+        .then(data => {
+          savedBudgets = data;
+          updateSavedBudgetsList();
+        })
+        .catch(error => console.error('Erro ao carregar orçamentos salvos:', error));
+    }
+
+    newBudgetForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      overlay.style.display = "block";
+      
+      const supplier = supplierNameInput.value.trim() || "Sem fornecedor";
+      
+      const dataToSend = currentItems.map(item => ({
+        FORNECEDOR: supplier,
+        PRODUTO: item.itemName || "Sem produto",
+        QUANTIDADE: item.qty || 0,
+        VALOR: item.price || 0
+      }));
+
+      fetch('https://script.google.com/macros/s/AKfycbwZoRfhhQe8kPWlnMyaRGAhPY1nB9tNaGALl_fgGRe9C2-a2P-buphfJohTLerSa8rBEQ/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+        mode: 'no-cors'
+      })
+      .then(() => {
+        alert('Dados enviados! (Verifique a planilha)');
+        const budgetData = {
+          supplier: supplier,
+          items: currentItems.map(item => ({
+            PRODUTO: item.itemName,
+            QUANTIDADE: item.qty,
+            VALOR: item.price
+          }))
+        };
+        savedBudgets.push(budgetData);
+        updateSavedBudgetsList();
+        overlay.style.display = "none";
+      })
+      .catch(error => {
+        alert('Erro: ' + error);
+        overlay.style.display = "none";
+      });
+      
+      supplierNameInput.value = "";
+      currentItems = [];
+      updateCurrentItemList();
+      document.querySelectorAll('#productList input[type="checkbox"]').forEach(cb => cb.checked = false);
+      document.querySelectorAll('#productList input[type="number"]').forEach(pi => {
+        pi.value = "";
+        pi.style.display = "none";
+      });
+    });
+
+    function updateSavedBudgetsList() {
+      savedBudgetsListDiv.innerHTML = "";
+      const container = document.createElement("div");
+      container.className = "budget-selection";
+      
+      displayedBudgets = savedBudgets.filter(budget => budget.supplier.toUpperCase() !== "FORNECEDOR");
+      
+      displayedBudgets.forEach((budget, index) => {
+        const card = document.createElement("div");
+        card.className = "budget-card";
+        card.innerHTML = `
+          <input type="checkbox" id="budget_${index}" value="${index}">
+          <label for="budget_${index}">${budget.supplier}</label>
+        `;
+        container.appendChild(card);
+      });
+      
+      savedBudgetsListDiv.appendChild(container);
+    }
+
+    compareButton.addEventListener("click", function() {
+      loadSavedBudgets();
+      setTimeout(() => {
+        const checkboxes = document.querySelectorAll('#savedBudgetsList input[type="checkbox"]:checked');
+        const selectedBudgets = Array.from(checkboxes).map(cb => displayedBudgets[cb.value]);
+        if (selectedBudgets.length === 0) {
+          alert("Selecione pelo menos um orçamento!");
+          return;
         }
+        generateComparisonTable(selectedBudgets);
+      }, 1000);
+    });
+
+    function generateComparisonTable(budgets) {
+      const table = document.createElement("table");
+      
+      const thead = document.createElement("thead");
+      
+      const headerRow1 = document.createElement("tr");
+      const emptyTh = document.createElement("th");
+      emptyTh.colSpan = 2;
+      headerRow1.appendChild(emptyTh);
+      const suppliersTh = document.createElement("th");
+      suppliersTh.colSpan = budgets.length;
+      suppliersTh.textContent = "FORNECEDORES";
+      headerRow1.appendChild(suppliersTh);
+      thead.appendChild(headerRow1);
+      
+      const headerRow2 = document.createElement("tr");
+      const thProduto = document.createElement("th");
+      thProduto.textContent = "PRODUTO";
+      headerRow2.appendChild(thProduto);
+      const thQtd = document.createElement("th");
+      thQtd.textContent = "QUANTIDADE";
+      headerRow2.appendChild(thQtd);
+      budgets.forEach(budget => {
+        const thSupplier = document.createElement("th");
+        thSupplier.textContent = budget.supplier;
+        headerRow2.appendChild(thSupplier);
+      });
+      thead.appendChild(headerRow2);
+      
+      table.appendChild(thead);
+      
+      const tbody = document.createElement("tbody");
+      
+      let supplierSums = new Array(budgets.length).fill(0);
+      
+      products.forEach(prod => {
+        const tr = document.createElement("tr");
+        const tdProduto = document.createElement("td");
+        tdProduto.textContent = prod.PRODUTO;
+        tr.appendChild(tdProduto);
+        const tdQtd = document.createElement("td");
+        tdQtd.textContent = prod.QUANTIDADE;
+        tr.appendChild(tdQtd);
         
-        // Mostrar erro
-        function showError(message) {
-            productsTable.innerHTML = `
-                <tr>
-                    <td colspan="6" class="text-center text-danger">${message}</td>
-                </tr>
-            `;
-            console.error(message);
-        }
-        
-        // Abrir modal para edição
-        async function editProduct(id) {
-            try {
-                const response = await fetch(`${API_URL}?action=getProductById&id=${id}`);
-                const product = await response.json();
-                
-                if (product.status === "error") {
-                    throw new Error(product.message);
-                }
-                
-                // Preencher formulário
-                document.getElementById('productId').value = id;
-                document.getElementById('id').value = product.id;
-                document.getElementById('nome').value = product.nome;
-                document.getElementById('descricao').value = product.descricao || '';
-                document.getElementById('preco').value = product.preco;
-                document.getElementById('categoria').value = product.categoria;
-                document.getElementById('imagem').value = product.imagem || '';
-                document.getElementById('descontos').value = product.descontos || '';
-                document.getElementById('preco_tamanhos_p').value = product.preço_tamanhos_p || '';
-                document.getElementById('preco_tamanhos_m').value = product.preço_tamanhos_m || '';
-                document.getElementById('preco_tamanhos_g').value = product.preço_tamanhos_g || '';
-                document.getElementById('tempo_promocao').value = product.tempo_promocao || '';
-                
-                // Atualizar preview da imagem
-                if (product.imagem) {
-                    imagePreview.src = product.imagem;
-                    imagePreview.classList.remove('d-none');
-                } else {
-                    imagePreview.classList.add('d-none');
-                }
-                
-                // Atualizar título do modal
-                modalTitle.textContent = 'Editar Produto';
-                
-                // Abrir modal
-                const modal = new bootstrap.Modal(document.getElementById('productModal'));
-                modal.show();
-                
-            } catch (error) {
-                alert('Erro ao carregar produto: ' + error.message);
+        let supplierCells = [];
+        budgets.forEach((budget, index) => {
+          const tdValor = document.createElement("td");
+          const item = budget.items.find(i => i.PRODUTO === prod.PRODUTO);
+          let value = Infinity;
+          if (item && item.VALOR !== "") {
+            const numericValue = parseFloat(item.VALOR);
+            if (!isNaN(numericValue)) {
+              tdValor.textContent = numericValue.toFixed(2);
+              value = numericValue;
+              supplierSums[index] += numericValue;
+            } else {
+              tdValor.textContent = item.VALOR;
             }
-        }
+          } else {
+            tdValor.textContent = "";
+          }
+          supplierCells.push({ cell: tdValor, value: value });
+          tr.appendChild(tdValor);
+        });
         
-        // Salvar produto (criação ou atualização)
-        async function saveProduct() {
-            const product = {
-                id: document.getElementById('id').value,
-                nome: document.getElementById('nome').value,
-                descricao: document.getElementById('descricao').value,
-                preco: document.getElementById('preco').value,
-                categoria: document.getElementById('categoria').value,
-                imagem: document.getElementById('imagem').value || null,
-                descontos: document.getElementById('descontos').value || null,
-                preço_tamanhos_p: document.getElementById('preco_tamanhos_p').value || null,
-                preço_tamanhos_m: document.getElementById('preco_tamanhos_m').value || null,
-                preço_tamanhos_g: document.getElementById('preco_tamanhos_g').value || null,
-                tempo_promocao: document.getElementById('tempo_promocao').value || null
-            };
-            
-            const originalId = document.getElementById('productId').value;
-            const action = originalId ? 'updateProduct' : 'addProduct';
-            
-            try {
-                // Mostrar spinner
-                spinner.style.display = 'inline-block';
-                saveButton.disabled = true;
-                
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: action,
-                        ...product,
-                        ...(originalId && { originalId })
-                    })
-                });
-                
-                const result = await response.json();
-                if (result.status === 'success') {
-                    alert(result.message);
-                    loadProducts();
-                    const modalEl = document.getElementById('productModal');
-                    const modal = bootstrap.Modal.getInstance(modalEl);
-                    modal.hide();
-                } else {
-                    throw new Error(result.message || 'Erro desconhecido');
-                }
-            } catch (error) {
-                alert('Erro ao salvar produto: ' + error.message);
-                console.error('Detalhes do erro:', error);
-            } finally {
-                // Esconder spinner
-                spinner.style.display = 'none';
-                saveButton.disabled = false;
+        const minValue = Math.min(...supplierCells.map(obj => obj.value));
+        if (minValue !== Infinity) {
+          supplierCells.forEach(obj => {
+            if (obj.value === minValue) {
+              obj.cell.style.backgroundColor = "#d4f4d4";
             }
+          });
         }
         
-        // Excluir produto
-        async function deleteProduct(id) {
-            if (!confirm('Tem certeza que deseja excluir este produto?')) return;
-            
-            try {
-                const response = await fetch(`${API_URL}?action=deleteProduct&id=${id}`);
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    alert(result.message);
-                    loadProducts();
-                } else {
-                    throw new Error(result.message);
-                }
-            } catch (error) {
-                alert('Erro ao excluir produto: ' + error.message);
+        tbody.appendChild(tr);
+      });
+      
+      const totalRow = document.createElement("tr");
+      const totalLabelTd = document.createElement("td");
+      totalLabelTd.colSpan = 2;
+      totalLabelTd.style.fontWeight = "bold";
+      totalLabelTd.textContent = "TOTAL";
+      totalRow.appendChild(totalLabelTd);
+      supplierSums.forEach(sum => {
+        const totalTd = document.createElement("td");
+        totalTd.style.fontWeight = "bold";
+        totalTd.textContent = sum.toFixed(2);
+        totalRow.appendChild(totalTd);
+      });
+      tbody.appendChild(totalRow);
+      
+      table.appendChild(tbody);
+      
+      comparisonResultDiv.innerHTML = "";
+      comparisonResultDiv.appendChild(table);
+    }
+
+    fetchProducts();
+    loadSavedBudgets();
+
+    /* ==================================
+       Código de Controle de Gastos (Código 2)
+    ================================== */
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxKreJ9mUvq1nutCeMjlVfN-WB8YiRE956qZL4zS1DZHsjHLD6QZyEenWY6sjDfIA4KqQ/exec';
+    
+    const expenseForm = document.getElementById('expense-form');
+    const expensesTableBody = document.querySelector('#expenses-table tbody');
+    const totalExpensesEl = document.getElementById('total-expenses');
+    
+    let totalExpenses = 0;
+    
+    function carregarGastos() {
+      fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+          expensesTableBody.innerHTML = '';
+          totalExpenses = 0;
+    
+          data.forEach(item => {
+            let dataRegistro = new Date(item.data);
+            if (isNaN(dataRegistro)) {
+              dataRegistro = "Data Inválida";
+            } else {
+              dataRegistro = dataRegistro.toLocaleDateString('pt-BR');
             }
-        }
-        
-        // Resetar formulário para novo produto
-        function resetForm() {
-            productForm.reset();
-            document.getElementById('productId').value = '';
-            imagePreview.classList.add('d-none');
-            modalTitle.textContent = 'Adicionar Produto';
-        }
-        
-        // Funções globais para acesso via HTML
-        window.editProduct = editProduct;
-        window.deleteProduct = deleteProduct;
-        window.resetForm = resetForm;
-    </script>
+            adicionarLinhaTabela(dataRegistro, item.descricao, item.categoria, parseFloat(item.valor));
+          });
+        })
+        .catch(error => {
+          console.error('Erro ao carregar os dados:', error);
+        });
+    }
+    
+    function adicionarLinhaTabela(data, descricao, categoria, valor) {
+      const tr = document.createElement('tr');
+    
+      const tdData = document.createElement('td');
+      tdData.textContent = data;
+    
+      const tdDesc = document.createElement('td');
+      tdDesc.textContent = descricao;
+    
+      const tdCat = document.createElement('td');
+      tdCat.textContent = categoria;
+    
+      const tdValor = document.createElement('td');
+      tdValor.textContent = valor.toFixed(2);
+    
+      tr.appendChild(tdData);
+      tr.appendChild(tdDesc);
+      tr.appendChild(tdCat);
+      tr.appendChild(tdValor);
+      expensesTableBody.appendChild(tr);
+    
+      totalExpenses += valor;
+      totalExpensesEl.textContent = "R$ " + totalExpenses.toFixed(2);
+    }
+    
+    document.addEventListener('DOMContentLoaded', carregarGastos);
+    
+    expenseForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const description = document.getElementById('expense-description').value.trim();
+      const category = document.getElementById('expense-category').value.trim();
+      const amount = parseFloat(document.getElementById('expense-amount').value);
+      
+      if (!description || !category || isNaN(amount) || amount <= 0) {
+        alert('Por favor, preencha todos os campos corretamente.');
+        return;
+      }
+      
+      const data = {
+        descricao: description,
+        categoria: category,
+        valor: amount
+      };
+      
+      fetch(scriptURL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      })
+      .then(response => {
+        const dataAtual = new Date().toLocaleDateString('pt-BR');
+        adicionarLinhaTabela(dataAtual, description, category, amount);
+        expenseForm.reset();
+        alert('Gasto salvo com sucesso!');
+      })
+      .catch(error => {
+        console.error('Erro ao salvar gasto:', error);
+        alert('Erro ao salvar o gasto.');
+      });
+    });
+  </script>
 </body>
 </html>
